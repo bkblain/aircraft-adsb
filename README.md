@@ -1,6 +1,6 @@
 # Aircraft ADS-B
 
-## Configure RTL-SDR
+## Installing RTL-SDR
 
 Install RTL-SDR linux libraries
 
@@ -10,25 +10,19 @@ sudo apt install rtl-sdr
 
 ## Installing Python Build Tools
 
-Install PIP for package management
+Install VENV for the virtual environment, PIP for package management, and TKinter for a GUI to plot samples
 
 ```
 sudo apt install python3-venv python3-pip python3-tk
 ```
 
-Don't install packages through pip, instead install pipenv which can be used to generate an environment for the project much like npm.
-
-```
-pip3 install pipenv
-```
-
-Ensure tools are up to date
+Ensure that Python tools are up to date
 
 ```
 python3 -m pip install --upgrade pip setuptools wheel
 ```
 
-Install pipenv
+Don't install application packages directly through pip, instead install pipenv which can be used to generate a virtual environment.
 
 ```
 python3 -m pip install --user pipenv
@@ -36,21 +30,27 @@ python3 -m pip install --user pipenv
 
 Restart your computer or user profile to refresh the `PATH` for the `pipenv` command.
 
-## Install Dependencies
+## Installing Dependencies
 
-Inside the project directory, install the python rtlsdr library which wraps the librtlsdr.
+Inside the project directory, install the python project dependencies.
 
 ```
 pipenv install
 ```
 
-Activate the Python virtual environment.
+## Execute Project Files
+
+Activate the Python virtual environment. To leave the virtual environment shell at any point, run the `exit` command.
 
 ```
 pipenv shell
 ```
 
+Now run any of the python files.
 
+```
+python plot.py
+```
 
 # References
 
