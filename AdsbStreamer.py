@@ -1,15 +1,24 @@
 #!/usr/bin/env python
+"""
+This Python script uses RTL-SDR to retrieve radio samples for the ADS-B frequency of 1090 and
+publishes those samples to a Kafka topic.
+"""
 
+# Python Standatd Libraries
 import asyncio
+import traceback
+
 import confluent_kafka as kafka
 import rtlsdr
-import traceback
 
 config = {
     "bootstrap.servers":"localhost:9092"
 }
 
+KAFKA_TOPIC = "quickstart"
+
 class AdsbStreamer:
+    """Class for streaming samples of ADS-B (frequency 1090)"""
 
     def __init__(self):
         self.sdr = rtlsdr.RtlSdr()
@@ -20,8 +29,10 @@ class AdsbStreamer:
         self.producer = kafka.Producer(config)
 
     async def run(self):
+        """Method for publishing samples into kafka topic using Python event loops."""
+
         async for samples in self.sdr.stream():
-            self.producer.produce("quickstart", str(len(samples)))
+            self.producer.produce(KAFKA_TOPIC, str(len(samples)))
 
         await self.sdr.stop()
         self.sdr.close()
