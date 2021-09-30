@@ -10,6 +10,10 @@ confluent-kafka = "*"
 
 [dev-packages]
 pylint = "*"
+wheel = "*"
+setuptools = "*"
+check-manifest = "*"
+build = "*"
 
 [requires]
 python_version = "3.8"

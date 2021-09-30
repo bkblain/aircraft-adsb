@@ -16,12 +16,6 @@ Install VENV for the virtual environment, PIP for package management, and PyLint
 sudo apt install python3-venv python3-pip pylint
 ```
 
-Ensure that Python tools are up to date
-
-```
-python3 -m pip install --upgrade pip setuptools wheel
-```
-
 Don't install application packages directly through pip, instead install pipenv which can be used to generate a virtual environment.
 
 ```
@@ -40,16 +34,14 @@ pipenv install
 
 ## Execute Project Files
 
-Activate the Python virtual environment. To leave the virtual environment shell at any point, run the `exit` command.
-
 ```
-pipenv shell
+pipenv run python src/adsb_streamer.py
 ```
 
-Now run any of the python files.
+## Build Python Wheel
 
 ```
-python AdsbStreamer.py
+pipenv run python -m build
 ```
 
 # References
