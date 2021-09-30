@@ -10,10 +10,10 @@ sudo apt install rtl-sdr
 
 ## Installing Python Build Tools
 
-Install VENV for the virtual environment, PIP for package management, and TKinter for a GUI to plot samples
+Install VENV for the virtual environment and PIP for package management
 
 ```
-sudo apt install python3-venv python3-pip python3-tk
+sudo apt install python3-venv python3-pip
 ```
 
 Ensure that Python tools are up to date
@@ -49,7 +49,7 @@ pipenv shell
 Now run any of the python files.
 
 ```
-python plot.py
+python AdsbStreamer.py
 ```
 
 # References
@@ -67,9 +67,14 @@ https://en.wikipedia.org/wiki/List_of_aircraft_type_designators#cite_note-ICAOco
 https://pyrtlsdr.readthedocs.io/en/latest/
 
 
-
 To Read
 
 https://junzis.com/files/pymodes.pdf
 
 https://pyrtlsdr.readthedocs.io/_/downloads/en/latest/pdf/
+
+
+Example how to demodulate signal
+
+https://github.com/junzis/pyModeS
+
