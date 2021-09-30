@@ -10,10 +10,10 @@ sudo apt install rtl-sdr
 
 ## Installing Python Build Tools
 
-Install VENV for the virtual environment and PIP for package management
+Install VENV for the virtual environment, PIP for package management, and PyLint for code linting
 
 ```
-sudo apt install python3-venv python3-pip
+sudo apt install python3-venv python3-pip pylint
 ```
 
 Ensure that Python tools are up to date
