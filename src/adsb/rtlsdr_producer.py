@@ -4,20 +4,16 @@ This Python script uses RTL-SDR to retrieve radio samples for the ADS-B frequenc
 publishes those samples to a Kafka topic.
 """
 
-# Python Standatd Libraries
-import asyncio
-import traceback
-
 import confluent_kafka as kafka
 import rtlsdr
 
 config = {
-    "bootstrap.servers":"localhost:9092"
+    "bootstrap.servers":"fractal.local:9092"
 }
 
 KAFKA_TOPIC = "quickstart"
 
-class AdsbStreamer:
+class RtlSdrProducer:
     """Class for streaming samples of ADS-B (frequency 1090)"""
 
     def __init__(self):
@@ -36,13 +32,3 @@ class AdsbStreamer:
 
         await self.sdr.stop()
         self.sdr.close()
-
-
-if __name__ == "__main__":
-    try:
-        adsb = AdsbStreamer()
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(adsb.run())
-    except rtlsdr.rtlsdr.LibUSBError:
-        print("RTL-SDR Not plugged in.")
-        traceback.print_exc()

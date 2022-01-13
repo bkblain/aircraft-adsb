@@ -70,3 +70,8 @@ Example how to demodulate signal
 
 https://github.com/junzis/pyModeS
 
+
+Main with CLI
+
+https://softwareengineering.stackexchange.com/questions/418600/best-practice-for-python-main-function-definition-and-program-start-exit
+
