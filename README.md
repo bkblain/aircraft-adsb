@@ -24,7 +24,7 @@ python3 -m pip install --user pipenv
 
 Restart your computer or user profile to refresh the `PATH` for the `pipenv` command.
 
-## Installing Dependencies
+## Installing Python Dependencies
 
 Inside the project directory, install the python project dependencies.
 
@@ -42,6 +42,28 @@ pipenv run python src/adsb_streamer.py
 
 ```
 pipenv run python -m build
+```
+
+## Installing Apache Kafka
+
+https://kafka.apache.org/quickstart
+
+https://stackoverflow.com/questions/34512287/how-to-automatically-start-kafka-upon-system-startup-in-ubuntu
+
+
+## Environment Variables Configuration
+
+Create the `/etc/environment.d/adsb.conf`
+
+```
+ADSB_KAFKA_CONFIG=
+ADSB_KAFKA_TOPIC=adsb
+```
+
+The file will run automatically on your computer restart. However, if this is your first time configuring or need to change the value, use the `export` command. Example:
+
+```
+export ADSB_KAFKA_TOPIC=new_adsb
 ```
 
 # References

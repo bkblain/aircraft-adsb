@@ -6,10 +6,18 @@ publishes those samples to a Kafka topic.
 
 # Python Standard Libraries
 import asyncio
+import os
 import sys
 import traceback
 
 import rtlsdr_producer
+
+
+config = {
+    "bootstrap.servers": os.environ.get("ADSB_KAFKA_CONFIG")
+}
+
+KAFKA_TOPIC =  os.environ.get("ADSB_KAFKA_TOPIC")
 
 def main() -> int:
 
@@ -22,8 +30,10 @@ def main() -> int:
 
     # TODO ADS-B Parser class
 
+    producer = rtlsdr_producer.RtlSdrProducer()
+    producer.configure(config, KAFKA_TOPIC)
+
     try:
-        producer = rtlsdr_producer.RtlSdrProducer()
         loop = asyncio.get_event_loop()
         loop.run_until_complete(producer.run())
     except KeyboardInterrupt:

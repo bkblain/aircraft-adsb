@@ -1,6 +1,6 @@
 {
-	"python.autoComplete.extraPaths": ["./src"],
-	"python.defaultInterpreterPath": "~/.local/share/virtualenvs/aircraft-adsb-7nZ4KJht/bin/python",
+	"python.autoComplete.extraPaths": ["./src", "~/.local/share/virtualenvs/aircraft-adsb-5rvK2V7V/lib"],
+	"python.defaultInterpreterPath": "~/.local/share/virtualenvs/aircraft-adsb-5rvK2V7V/bin/python",
 	"python.linting.enabled": true,
 	"python.linting.pylintEnabled": true
 }

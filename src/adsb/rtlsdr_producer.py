@@ -5,13 +5,8 @@ publishes those samples to a Kafka topic.
 """
 
 import confluent_kafka as kafka
+import pyModeS as pms
 import rtlsdr
-
-config = {
-    "bootstrap.servers":"fractal.local:9092"
-}
-
-KAFKA_TOPIC = "quickstart"
 
 class RtlSdrProducer:
     """Class for streaming samples of ADS-B (frequency 1090)"""
@@ -22,13 +17,19 @@ class RtlSdrProducer:
         self.sdr.center_freq = 1090e6
         self.sdr.gain = "auto"
 
+        self.topic = ""
+        self.producer = None
+
+    def configure(self, config, topic):
+        """Configure the Kafka producer and topic"""
+        self.topic = topic
         self.producer = kafka.Producer(config)
 
     async def run(self):
         """Method for publishing samples into kafka topic using Python event loops."""
 
         async for samples in self.sdr.stream():
-            self.producer.produce(KAFKA_TOPIC, str(len(samples)))
+            self.producer.produce(self.topic, str(len(samples)))
 
         await self.sdr.stop()
         self.sdr.close()

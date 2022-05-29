@@ -4,9 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pyrtlsdr = "*"
 asyncio = "*"
 confluent-kafka = "*"
+pymodes = "*"
+pyrtlsdr = "*"
 
 [dev-packages]
 pylint = "*"
