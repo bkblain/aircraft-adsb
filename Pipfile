@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 asyncio = "*"
 confluent-kafka = "*"
+matplotlib = "*"
+numpy = "*"
 pymodes = "*"
 pyrtlsdr = "*"
 
