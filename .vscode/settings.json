@@ -1,6 +1,14 @@
 {
-	"python.autoComplete.extraPaths": ["./src", "~/.local/share/virtualenvs/aircraft-adsb-5rvK2V7V/lib"],
-	"python.defaultInterpreterPath": "~/.local/share/virtualenvs/aircraft-adsb-5rvK2V7V/bin/python",
+	"python.analysis.extraPaths": [
+		"${workspaceFolder}/src",
+		"${env:ADSB_PYTHON_PATH}/lib"
+	],
+	"python.autoComplete.extraPaths": [
+		"${workspaceFolder}/src",
+		"${env:ADSB_PYTHON_PATH}/lib"
+	],
+	"python.defaultInterpreterPath": "${env:ADSB_PYTHON_PATH}/bin/python",
 	"python.linting.enabled": true,
-	"python.linting.pylintEnabled": true
+	"python.linting.pylintEnabled": true,
+	"python.linting.pylintPath": "${userHome}/.local/bin/pylint"
 }

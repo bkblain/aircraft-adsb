@@ -58,12 +58,13 @@ Create the `/etc/environment.d/adsb.conf`
 ```
 ADSB_KAFKA_CONFIG=
 ADSB_KAFKA_TOPIC=adsb
+ADSB_PYTHON_PATH=~/.local/share/virtualenvs/aircraft-adsb-producer-####
 ```
 
 The file will run automatically on your computer restart. However, if this is your first time configuring or need to change the value, use the `export` command. Example:
 
 ```
-export ADSB_KAFKA_TOPIC=new_adsb
+export ADSB_KAFKA_TOPIC=adsb
 ```
 
 # References
@@ -79,6 +80,9 @@ https://en.wikipedia.org/wiki/List_of_airline_codes
 https://en.wikipedia.org/wiki/List_of_aircraft_type_designators#cite_note-ICAOcode-3
 
 https://pyrtlsdr.readthedocs.io/en/latest/
+
+kafka-python docs
+https://kafka-python.readthedocs.io/en/master/index.html
 
 
 To Read
