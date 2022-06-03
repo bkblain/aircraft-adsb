@@ -9,7 +9,7 @@ import numpy as np
 import os
 import pyModeS as pms
 import time
-
+from rtlsdr_util import RtlSdrUtil
 
 # example raw message
 # 8D4840D6202CC371C32CE0576098
@@ -27,6 +27,7 @@ preamble = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0]
 th_amp_diff = 0.8  # signal amplitude threshold difference between 0 and 1 bit
 
 
+# capture1 = 200001122AB752
 samples = np.loadtxt("target/capture1.txt", delimiter=',', dtype=np.complex128)
 
 print(samples[0])
@@ -48,27 +49,14 @@ print(len(signal_buffer))
 
 # To see what the resulting plot looks like, uncomment these lines
 # -----------------------------------------------------------------------------
-psd(signal_buffer, NFFT=1024, Fs=sample_rate/1e6, Fc=center_freq/1e6)
-xlabel('Frequency (MHz)')
-ylabel('Relative power (dB)')
-show()
+RtlSdrUtil.plot(signal_buffer, sample_rate, center_freq)
 # -----------------------------------------------------------------------------
 
-
-# Calculate noise floor
-window = samples_per_microsec
-total_len = len(signal_buffer)
-
-# // = the integer division operator
-# no idea what this is doing
-means = (
-    np.array(signal_buffer[: total_len // window * window])
-    .reshape(-1, window)
-    .mean(axis=1)
-)
-
 # minimum calculated noise or default to 1 microsecond
-noise_floor = min(min(means), 1e6)
+noise_floor = min(RtlSdrUtil.calculateNoiseFloor(signal_buffer, sample_rate), 1e6)
+
+
+print('noise = ' + str(noise_floor))
 
 
 # set minimum signal amplitude
@@ -119,9 +107,6 @@ while i < buffer_length:
                 check = False
                 break
 
-    # print('ready to check ' + str(i) + ' for preamble = ' + str(check))
-
-    # i += 1
 
     if check:
         frame_start = i + pbits * 2
