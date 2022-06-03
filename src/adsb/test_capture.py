@@ -17,6 +17,6 @@ samples = sdr.read_samples(100*1024)
 sdr.close()
 
 os.makedirs("target", exist_ok=True)
-np.savetxt("target/capture4.txt", samples, delimiter=",")
+np.savetxt("target/capture.txt", samples, delimiter=",")
 
 

@@ -11,7 +11,7 @@ import os
 sample_rate = 2e6
 center_freq = 1090e6
 
-samples = np.loadtxt("target/capture4.txt", delimiter=',', dtype=np.complex128)
+samples = np.loadtxt("target/capture.txt", delimiter=',', dtype=np.complex128)
 
 
 # use matplotlib to estimate and plot the PSD
