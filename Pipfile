@@ -10,7 +10,6 @@ matplotlib = "*"
 numpy = "*"
 pymodes = "*"
 pyrtlsdr = "*"
-time = "*"
 
 [dev-packages]
 pylint = "*"

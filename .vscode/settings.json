@@ -1,4 +1,5 @@
 {
+	"python.analysis.autoSearchPaths": true,
 	"python.analysis.extraPaths": [
 		"${workspaceFolder}/src",
 		"${env:ADSB_PYTHON_PATH}/lib"
@@ -9,6 +10,5 @@
 	],
 	"python.defaultInterpreterPath": "${env:ADSB_PYTHON_PATH}/bin/python",
 	"python.linting.enabled": true,
-	"python.linting.pylintEnabled": true,
-	"python.linting.pylintPath": "${userHome}/.local/bin/pylint"
+	"python.linting.pylintEnabled": true
 }

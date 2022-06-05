@@ -81,6 +81,8 @@ https://en.wikipedia.org/wiki/List_of_aircraft_type_designators#cite_note-ICAOco
 
 https://pyrtlsdr.readthedocs.io/en/latest/
 
+https://cdn.knmi.nl/knmi/pdf/bibliotheek/knmipubTR/TR336.pdf
+
 kafka-python docs
 https://kafka-python.readthedocs.io/en/master/index.html
 

@@ -10,11 +10,10 @@ import os
 import sys
 import traceback
 
-import rtlsdr_producer
+import adsb
 
-
-config = {
-    "bootstrap.servers": os.environ.get("ADSB_KAFKA_CONFIG")
+CONFIG = {
+    "bootstrap.servers": os.environ.get("ADSB_KAFKA_SERVERS")
 }
 
 KAFKA_TOPIC =  os.environ.get("ADSB_KAFKA_TOPIC")
@@ -30,8 +29,8 @@ def main() -> int:
 
     # TODO ADS-B Parser class
 
-    producer = rtlsdr_producer.RtlSdrProducer()
-    producer.configure(config, KAFKA_TOPIC)
+    producer = adsb.adsb_producer.AdsbProducer()
+    producer.configure(CONFIG, KAFKA_TOPIC)
 
     try:
         loop = asyncio.get_event_loop()
