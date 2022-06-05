@@ -37,6 +37,9 @@ PREAMBLE = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0]
 
 SAMPLE_RATE = 2e6
 
+# signal amplitude threshold difference between 0 and 1 bit
+AMPLITUDE_THRESHOLD = 0.8
+
 
 MESSAGE_LENGTH = len(PREAMBLE) + ((DATA_LENGTH + 1) * 2)
 
@@ -45,13 +48,13 @@ class AdsbRtlSdr:
     """Class for streaming samples of ADS-B"""
 
     @staticmethod
-    def calculate_noise_floor(samples, sample_rate):
+    def calculate_noise_floor(samples):
         """Configure
         sample_rate is samples per second
         """
 
         # Calculate noise floor
-        window = int(sample_rate / MICROSECOND) * 100
+        window = int(SAMPLE_RATE / MICROSECOND) * 100
         length = len(samples)
 
         # // = the integer division operator
@@ -72,14 +75,14 @@ class AdsbRtlSdr:
         matplotlib.pyplot.show()
 
     @staticmethod
-    def plot_psd(samples, sample_rate, center_frequency):
+    def plot_psd(samples):
         """Use matplotlib to estimate and plot the PSD"""
 
         matplotlib.pyplot.psd(
             samples,
             NFFT=1024,
-            Fs=sample_rate/MICROSECOND,
-            Fc=center_frequency/MICROSECOND
+            Fs=SAMPLE_RATE/MICROSECOND,
+            Fc=CENTER_FREQUENCY/MICROSECOND
         )
         matplotlib.pyplot.xlabel('Frequency (MHz)')
         matplotlib.pyplot.ylabel('Relative power (dB)')

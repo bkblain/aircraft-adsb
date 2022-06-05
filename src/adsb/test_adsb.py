@@ -14,9 +14,7 @@ import pyModeS as pms
 # pms.tell("8D4840D6202CC371C32CE0576098")
 
 
-sample_rate = 2e6
 samples_per_microsec = 200
-center_freq = 1090e6
 signal_buffer = []
 messages = []
 
@@ -54,12 +52,12 @@ print(len(signal_buffer))
 
 # To see what the resulting plot looks like, uncomment these lines
 # -----------------------------------------------------------------------------
-adsb_rtlsdr.AdsbRtlSdr.plot_psd(signal_buffer, sample_rate, center_freq)
+adsb_rtlsdr.AdsbRtlSdr.plot_psd(signal_buffer)
 # -----------------------------------------------------------------------------
 
 # minimum calculated noise or default to 1 microsecond
-noise_floor = min(adsb_rtlsdr.AdsbRtlSdr.calculate_noise_floor(
-    signal_buffer, sample_rate), 1e6)
+calculated = adsb_rtlsdr.AdsbRtlSdr.calculate_noise_floor(signal_buffer)
+noise_floor = min(calculated, 1e6)
 
 # set minimum signal amplitude
 # 10 dB SNR
