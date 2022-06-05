@@ -38,7 +38,8 @@ print(samples[0])
 print(len(samples))
 
 
-# removing "negative frequencies" (based on numpy, I think this makes it scalar - remember 'j' is imaginary number)
+# removing "negative frequencies" (based on numpy, I think this makes it scalar
+# - remember 'j' is imaginary number)
 # original complex128 type = (-0.0039215686274509665-0.0039215686274509665j)
 # resulting signal_buffer = 0.005545935538718
 #
@@ -57,14 +58,15 @@ adsb_rtlsdr.AdsbRtlSdr.plot_psd(signal_buffer, sample_rate, center_freq)
 # -----------------------------------------------------------------------------
 
 # minimum calculated noise or default to 1 microsecond
-noise_floor = min(adsb_rtlsdr.AdsbRtlSdr.calculate_noise_floor(signal_buffer, sample_rate), 1e6)
+noise_floor = min(adsb_rtlsdr.AdsbRtlSdr.calculate_noise_floor(
+    signal_buffer, sample_rate), 1e6)
 
 # set minimum signal amplitude
 # 10 dB SNR
 # SNR = Signal to Noise Ratio = 3.162
-# 
+#
 # I don't understand why they are using a constant instead of calculating the value
-# 
+#
 # https://www.electronics-tutorials.ws/filter/decibels.html
 # https://dsp.stackexchange.com/questions/70779/how-is-signal-to-noise-ratio-actually-measured-by-receiver-equipment
 # https://documentation.meraki.com/MR/WiFi_Basics_and_Best_Practices/Signal-to-Noise_Ratio_(SNR)_and_Wireless_Signal_Strength
@@ -90,7 +92,7 @@ while i < (buffer_length - message_length):
         # https://mode-s.org/decode/content/introduction.html
 
         check = True
-        pulses = signal_buffer[i : i + pbits * 2]
+        pulses = signal_buffer[i: i + pbits * 2]
 
         # I guess this checks to make sure it's not at the end of the array
         # if len(pulses) != 16:
@@ -103,10 +105,8 @@ while i < (buffer_length - message_length):
                 check = False
                 break
 
-
         if check:
             print('current i =' + str(i))
-
 
             frame_start = i + pbits * 2
             frame_end = i + pbits * 2 + (fbits + 1) * 2
@@ -123,7 +123,7 @@ while i < (buffer_length - message_length):
 
             msgbin = []
             for j in range(0, frame_length, 2):
-                p2 = frame_pulses[j : j + 2]
+                p2 = frame_pulses[j: j + 2]
                 if len(p2) < 2:
                     break
 
@@ -171,7 +171,6 @@ while i < (buffer_length - message_length):
                     checkMsg = True
                 elif df in [4, 5, 11] and msglen == 14:
                     checkMsg = True
-
 
                 if checkMsg:
                     messages.append([msg, time.time()])

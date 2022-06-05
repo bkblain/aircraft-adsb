@@ -19,5 +19,3 @@ sdr.close()
 
 os.makedirs("target", exist_ok=True)
 numpy.savetxt("target/capture.txt", samples, delimiter=",")
-
-

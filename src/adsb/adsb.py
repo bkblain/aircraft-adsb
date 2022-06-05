@@ -8,7 +8,6 @@ publishes those samples to a Kafka topic.
 import asyncio
 import os
 import sys
-import traceback
 
 import adsb
 
@@ -16,18 +15,13 @@ CONFIG = {
     "bootstrap.servers": os.environ.get("ADSB_KAFKA_SERVERS")
 }
 
-KAFKA_TOPIC =  os.environ.get("ADSB_KAFKA_TOPIC")
+KAFKA_TOPIC = os.environ.get("ADSB_KAFKA_TOPIC")
+
 
 def main() -> int:
-
-    # Parse any arguments
-
-    # TODO: load configuration and pass to the Kafka producer
-    # RTL-SDR config
-    # Kafka config
-    # Kafka topic
-
-    # TODO ADS-B Parser class
+    """
+        The main method to initiate application execution
+    """
 
     producer = adsb.adsb_producer.AdsbProducer()
     producer.configure(CONFIG, KAFKA_TOPIC)
@@ -37,9 +31,6 @@ def main() -> int:
         loop.run_until_complete(producer.run())
     except KeyboardInterrupt:
         print('Aborted manually.', file=sys.stderr)
-        return 1
-    except Exception as err:
-        traceback.print_exc()
         return 1
 
     return 0

@@ -1,4 +1,5 @@
 {
+	"editor.formatOnSave": true,
 	"python.analysis.autoSearchPaths": true,
 	"python.analysis.extraPaths": [
 		"${workspaceFolder}/src",
@@ -9,6 +10,7 @@
 		"${env:ADSB_PYTHON_PATH}/lib"
 	],
 	"python.defaultInterpreterPath": "${env:ADSB_PYTHON_PATH}/bin/python",
+	"python.formatting.provider": "autopep8",
 	"python.linting.enabled": true,
 	"python.linting.pylintEnabled": true
 }

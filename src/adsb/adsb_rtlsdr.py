@@ -18,13 +18,12 @@ import rtlsdr
 
 # The Secondar Surveillance Radar (SSR) transmits interrogations using the
 # 1030 MHz radio frequency and the aircraft transponder transmits replies using
-# the 1090 MHz radio frequency. 
+# the 1090 MHz radio frequency.
 CENTER_FREQUENCY = 1090e6
 
 # Mode-S ADS-B technology has two types of squitter, a short, 56 bit,
 # acquisition squitter which can contain Downlink Formats (DF) 0, 4, 5 and 11
 # (DF0/4/5/11) and the 112 bit extended squitter (ES) which can contain DF17.
-# 
 # https://cdn.knmi.nl/knmi/pdf/bibliotheek/knmipubTR/TR336.pdf
 DATA_LENGTH = 112
 
@@ -36,7 +35,6 @@ MICROSECOND = 1e6
 # 16 total bits. The preamble indicates the start of an ADS-B data message.
 PREAMBLE = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0]
 
-# 
 SAMPLE_RATE = 2e6
 
 
@@ -77,7 +75,12 @@ class AdsbRtlSdr:
     def plot_psd(samples, sample_rate, center_frequency):
         """Use matplotlib to estimate and plot the PSD"""
 
-        matplotlib.pyplot.psd(samples, NFFT=1024, Fs=sample_rate/MICROSECOND, Fc=center_frequency/MICROSECOND)
+        matplotlib.pyplot.psd(
+            samples,
+            NFFT=1024,
+            Fs=sample_rate/MICROSECOND,
+            Fc=center_frequency/MICROSECOND
+        )
         matplotlib.pyplot.xlabel('Frequency (MHz)')
         matplotlib.pyplot.ylabel('Relative power (dB)')
         matplotlib.pyplot.show()
@@ -88,7 +91,7 @@ class AdsbRtlSdr:
         self.sdr.center_freq = CENTER_FREQUENCY
         self.sdr.gain = "auto"
 
-    def close(self): 
+    def close(self):
         return self.sdr.close()
 
     def stop(self):

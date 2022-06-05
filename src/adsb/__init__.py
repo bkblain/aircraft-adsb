@@ -1,1 +1,1 @@
-__all__ = ["adsb", "rtlsdr_producer"]
+__all__ = ["adsb", "adsb_producer", "adsb_rtlsdr"]

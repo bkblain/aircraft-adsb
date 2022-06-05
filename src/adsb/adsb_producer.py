@@ -7,6 +7,7 @@ publishes those samples to a Kafka topic.
 import adsb_rtlsdr
 import kafka
 
+
 class AdsbProducer:
     """Class for streaming samples of ADS-B (frequency 1090)"""
 
@@ -19,7 +20,8 @@ class AdsbProducer:
     def configure(self, bootstrap_servers, topic):
         """Configure the Kafka producer and topic"""
         self.topic = topic
-        self.producer = kafka.KafkaProducer(bootstrap_servers=bootstrap_servers)
+        self.producer = kafka.KafkaProducer(
+            bootstrap_servers=bootstrap_servers)
 
     async def run(self):
         """Method for publishing samples into kafka topic using Python event loops."""

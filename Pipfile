@@ -12,11 +12,12 @@ pymodes = "*"
 pyrtlsdr = "*"
 
 [dev-packages]
-pylint = "*"
-wheel = "*"
-setuptools = "*"
-check-manifest = "*"
+autopep8 = "*"
 build = "*"
+check-manifest = "*"
+pylint = "*"
+setuptools = "*"
+wheel = "*"
 
 [requires]
 python_version = "3.10"
