@@ -9,12 +9,9 @@ import asyncio
 import os
 import sys
 
-import adsb
+import adsb_producer
 
-CONFIG = {
-    "bootstrap.servers": os.environ.get("ADSB_KAFKA_SERVERS")
-}
-
+BOOTSTRAP_SERVERS = os.environ.get("ADSB_KAFKA_SERVERS")
 KAFKA_TOPIC = os.environ.get("ADSB_KAFKA_TOPIC")
 
 
@@ -23,8 +20,9 @@ def main() -> int:
         The main method to initiate application execution
     """
 
-    producer = adsb.adsb_producer.AdsbProducer()
-    producer.configure(CONFIG, KAFKA_TOPIC)
+    producer = adsb_producer.AdsbProducer()
+    producer.configure(BOOTSTRAP_SERVERS)
+    producer.set_topic(KAFKA_TOPIC)
 
     try:
         loop = asyncio.get_event_loop()

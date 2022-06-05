@@ -94,8 +94,14 @@ class AdsbRtlSdr:
     def close(self):
         return self.sdr.close()
 
-    def stop(self):
-        return self.sdr.stop()
+    async def get_messages(self):
+        """
+            Parses the current RTL-SDR stream and returns the ADS-B messages
+        """
 
-    def stream(self):
-        return self.sdr.stream()
+        async for samples in self.sdr.stream():
+            # parse the samples
+            print(str(len(samples)))
+
+        await self.sdr.stop()
+        return []

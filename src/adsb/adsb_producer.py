@@ -17,19 +17,20 @@ class AdsbProducer:
         self.topic = ""
         self.producer = None
 
-    def configure(self, bootstrap_servers, topic):
+    def configure(self, bootstrap_servers):
         """Configure the Kafka producer and topic"""
-        self.topic = topic
         self.producer = kafka.KafkaProducer(
             bootstrap_servers=bootstrap_servers)
 
-    async def run(self):
+    def run(self):
         """Method for publishing samples into kafka topic using Python event loops."""
 
-        async for samples in self.sdr.stream():
-            # perform parsing on the samples
-            # send a json string of the ADS-B data into kafka
-            self.producer.send(self.topic, str(len(samples)))
+        for messages in self.sdr.get_messages():
+            # Instead of stream, change the method to retrieve adsb messages
+            # this will encapsulate the rtlsdr
+            self.producer.send(self.topic, str(len(messages)))
 
-        await self.sdr.stop()
         self.sdr.close()
+
+    def set_topic(self, topic):
+        self.topic = topic
