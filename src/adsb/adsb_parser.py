@@ -75,6 +75,34 @@ class AdsbParser:
         return min(means)
 
     @staticmethod
+    def is_adsb_squitter(message):
+        """
+        Returns if the given message is of type ADS-B.
+
+        Mode-S ADS-B technology has two types of squitter, a short, 56 bit,
+        acquisition squitter which can contain Downlink Formats (DF) 0, 4, 5
+        and 11 (DF0/4/5/11) and the 112 bit extended squitter (ES) which can
+        contain DF17.
+
+        https://cdn.knmi.nl/knmi/pdf/bibliotheek/knmipubTR/TR336.pdf
+        """
+
+        downlink_format = pyModeS.df(message)
+        length = len(message)
+
+        print('df = ' + str(downlink_format))
+
+        if downlink_format == 17 and length == 28:
+            if pyModeS.crc(message) == 0:
+                return True
+        elif downlink_format in [20, 21] and length == 28:
+            return True
+        elif downlink_format in [4, 5, 11] and length == 14:
+            return True
+
+        return False
+
+    @staticmethod
     def plot(samples):
         """Plot an array of samples"""
         matplotlib.pyplot.plot(samples)
@@ -211,34 +239,12 @@ class AdsbParser:
                     i = frame_start + j
 
                     if len(msgbin) > 0:
-                        msg = pyModeS.bin2hex(
+                        message = pyModeS.bin2hex(
                             "".join([str(i) for i in msgbin]))
-                        print('msg = ' + msg)
+                        print('msg = ' + message)
 
-                        # df = downlink format
-                        # Mode-S ADS-B technology has two types of squitter, a short, 56 bit, acquisition
-                        # squitter which can contain Downlink Formats (DF) 0, 4, 5 and 11 (DF0/4/5/11)
-                        # and the 112 bit extended squitter (ES) which can contain DF17.
-                        # https://cdn.knmi.nl/knmi/pdf/bibliotheek/knmipubTR/TR336.pdf
-
-                        df = pyModeS.df(msg)
-                        print('df = ' + str(df))
-                        msglen = len(msg)
-                        checkMsg = False
-
-                        if df == 17 and msglen == 28:
-                            if pyModeS.crc(msg) == 0:
-                                checkMsg = True
-                        elif df in [20, 21] and msglen == 28:
-                            checkMsg = True
-                        elif df in [4, 5, 11] and msglen == 14:
-                            checkMsg = True
-
-                        if checkMsg:
-                            messages.append([msg, time.time()])
-
-                        # if self.debug:
-                        #     self._debug_msg(msghex)
+                        if self.is_adsb_squitter(message):
+                            messages.append([message, time.time()])
 
             # elif i > buffer_length - 500:
             #     # save some for next process
