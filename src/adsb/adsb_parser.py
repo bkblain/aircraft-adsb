@@ -23,7 +23,7 @@ import pyModeS
 # acquisition squitter which can contain Downlink Formats (DF) 0, 4, 5 and 11
 # (DF0/4/5/11) and the 112 bit extended squitter (ES) which can contain DF17.
 # https://cdn.knmi.nl/knmi/pdf/bibliotheek/knmipubTR/TR336.pdf
-DATA_LENGTH = 112
+DATA_LENGTH = 224
 
 # The divisional value of a single microsecond .000001, also represented by the
 # symbol μs.
@@ -33,22 +33,12 @@ MICROSECOND = 1e6
 # 16 total bits. The preamble indicates the start of an ADS-B data message.
 PREAMBLE = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0]
 
+PREAMBLE_LENGTH = len(PREAMBLE)
+
 # signal amplitude threshold difference between 0 and 1 bit
 AMPLITUDE_THRESHOLD = 0.8
 
-
-MESSAGE_LENGTH = len(PREAMBLE) + ((DATA_LENGTH + 1) * 2)
-
-
-# All Mode S replies start with an 8 μs fixed preamble and continue with 56- or 112 μs data block.
-
-pbits = 8
-fbits = 112
-message_length = pbits * 2 + (fbits + 1) * 2
-preamble = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0]
-
-
-th_amp_diff = 0.8  # signal amplitude threshold difference between 0 and 1 bit
+MESSAGE_LENGTH = PREAMBLE_LENGTH + DATA_LENGTH + 1
 
 
 class AdsbParser:
@@ -58,6 +48,8 @@ class AdsbParser:
     def calculate_noise_floor(samples):
         """Configure
         sample_rate is samples per second
+        Returns minimum calculated noise or default to 1 microsecond
+
         """
 
         # Calculate noise floor
@@ -72,10 +64,11 @@ class AdsbParser:
             .mean(axis=1)
         )
 
-        return min(means)
+        calculated = min(means)
+        return min(calculated, MICROSECOND)
 
     @staticmethod
-    def is_adsb_squitter(message):
+    def is_adsb_squitter(samples):
         """
         Returns if the given message is of type ADS-B.
 
@@ -87,13 +80,11 @@ class AdsbParser:
         https://cdn.knmi.nl/knmi/pdf/bibliotheek/knmipubTR/TR336.pdf
         """
 
-        downlink_format = pyModeS.df(message)
-        length = len(message)
-
-        print('df = ' + str(downlink_format))
+        downlink_format = pyModeS.df(samples)
+        length = len(samples)
 
         if downlink_format == 17 and length == 28:
-            if pyModeS.crc(message) == 0:
+            if pyModeS.crc(samples) == 0:
                 return True
         elif downlink_format in [20, 21] and length == 28:
             return True
@@ -101,6 +92,22 @@ class AdsbParser:
             return True
 
         return False
+
+    @staticmethod
+    def is_preamble(samples):
+        """
+        Determines if the given samples match the ADS-B preamble. The samples
+        size must be 16 bits in length.
+        """
+
+        if(len(samples) != PREAMBLE_LENGTH):
+            return False
+
+        for i in range(PREAMBLE_LENGTH):
+            if abs(samples[i] - PREAMBLE[i]) > AMPLITUDE_THRESHOLD:
+                return False
+
+        return True
 
     @staticmethod
     def plot(samples):
@@ -123,6 +130,34 @@ class AdsbParser:
         matplotlib.pyplot.ylabel('Relative power (dB)')
         matplotlib.pyplot.show()
 
+    @staticmethod
+    def signal_to_binary(samples):
+
+        # TODO not sure why they set a noise floor and then still had to set this
+        # threshold value to avoid noise from becoming bits.
+        threshold = max(samples) * 0.25
+
+        # The information contained in the data block is modulated using
+        #  the Pulse Position Modulation (PPM), which is a type of
+        # amplitude modulation. In PPM, the 1 bit is represented by a 0.5 μs
+        # of pulse followed by a 0.5 μs flat signal. The 0 bit is reversed
+        # compared to the 1 bit, which is represented by a 0.5 μs flat
+        # signal and followed by a 0.5 μs pulse.
+
+        message = []
+        for i in range(0, len(samples), 2):
+            pulse = samples[i: i + 2]
+
+            if pulse[0] < threshold and pulse[1] < threshold:
+                break
+
+            if pulse[0] >= pulse[1]:
+                message.append("1")
+            else:
+                message.append("0")
+
+        return message
+
     def parse_samples(self, samples):
 
         signal_buffer = []
@@ -138,17 +173,12 @@ class AdsbParser:
         amp = numpy.absolute(samples)
         signal_buffer.extend(amp.tolist())
 
-        print(signal_buffer[0])
-        print(len(signal_buffer))
-
         # To see what the resulting plot looks like, uncomment these lines
         # -----------------------------------------------------------------------------
         self.plot_psd(signal_buffer)
         # -----------------------------------------------------------------------------
 
-        # minimum calculated noise or default to 1 microsecond
-        calculated = self.calculate_noise_floor(signal_buffer)
-        noise_floor = min(calculated, 1e6)
+        noise_floor = self.calculate_noise_floor(signal_buffer)
 
         # set minimum signal amplitude
         # 10 dB SNR
@@ -164,100 +194,33 @@ class AdsbParser:
         buffer_length = len(signal_buffer)
 
         i = 0
-
-        while i < (buffer_length - message_length):
+        while i <= (buffer_length - MESSAGE_LENGTH):
 
             # Anything that is below the minimum signal amplitude can be skipped
             if signal_buffer[i] >= min_sig_amp:
 
-                # The pulses are about 0.8 μs wide. P1 and P3 are the two main pulses sent by
-                # the directional antenna. They are separated by 8 μs and 21 μs, respectively
-                # for Mode A and C. P2 is a pulse emitted through the omnidirectional antenna
-                # right after P1. Pulse P2 is introduced for sidelobe suppression
-                # [Orlando 1989]. When the power of P2 is higher than P1, the interrogation
-                # is likely from the side lobes of the directional antenna and should be
-                # ignored by the aircraft. This is can happen when the aircraft is close to
-                # the radar.
-                # https://mode-s.org/decode/content/introduction.html
+                pulses = signal_buffer[i: i + PREAMBLE_LENGTH]
 
-                check = True
-                pulses = signal_buffer[i: i + pbits * 2]
+                if self.is_preamble(pulses):
+                    data_start = i + PREAMBLE_LENGTH
+                    data_end = i + MESSAGE_LENGTH
+                    data = signal_buffer[data_start:data_end]
 
-                # I guess this checks to make sure it's not at the end of the array
-                # if len(pulses) != 16:
-                #     check = False
-                # else:
+                    self.plot(data)
 
-                for k in range(16):
-                    # th_amp_diff = signal amplitude threshold difference between 0 and 1 bit
-                    if abs(pulses[k] - preamble[k]) > th_amp_diff:
-                        check = False
-                        break
+                    message_binary = self.signal_to_binary(data)
+                    message = pyModeS.bin2hex(
+                        "".join([str(i) for i in message_binary]))
 
-                if check:
-                    print('current i =' + str(i))
+                    if self.is_adsb_squitter(message):
+                        messages.append([message, time.time()])
 
-                    frame_start = i + pbits * 2
-                    frame_end = i + pbits * 2 + (fbits + 1) * 2
-                    frame_length = (fbits + 1) * 2
-                    frame_pulses = signal_buffer[frame_start:frame_end]
-
-                    print('frame start = ' + str(frame_start))
-                    print('frame end = ' + str(frame_end))
-                    print('')
-
-                    self.plot(frame_pulses)
-
-                    threshold = max(frame_pulses) * 0.2
-
-                    msgbin = []
-                    for j in range(0, frame_length, 2):
-                        p2 = frame_pulses[j: j + 2]
-                        if len(p2) < 2:
-                            break
-
-                        if p2[0] < threshold and p2[1] < threshold:
-                            break
-                        elif p2[0] >= p2[1]:
-                            c = 1
-                        elif p2[0] < p2[1]:
-                            c = 0
-                        else:
-                            msgbin = []
-                            break
-
-                        msgbin.append(c)
-
-                    # why is the first data 56 but the second data len 57?
-                    # I think there is an off by 1 bug in here (df=4 and df=8).
-                    # the df=8 indicates there needs to be another 0 in front of the binary string
-
-                    print('msgbin ' + str(len(msgbin)))
-                    print(msgbin)
-
-                    # advance i with a jump
-                    i = frame_start + j
-
-                    if len(msgbin) > 0:
-                        message = pyModeS.bin2hex(
-                            "".join([str(i) for i in msgbin]))
-                        print('msg = ' + message)
-
-                        if self.is_adsb_squitter(message):
-                            messages.append([message, time.time()])
-
-            # elif i > buffer_length - 500:
-            #     # save some for next process
-            #     break
-            # else:
-            #     i += 1
+                    # advance i past the data it just read
+                    i += len(data)
 
             i += 1
 
-        print('i = ' + str(i))
-
-        # reset the buffer
-        signal_buffer = signal_buffer[i:]
-
         print(messages)
         pyModeS.tell(messages[0][0])
+
+        return messages
