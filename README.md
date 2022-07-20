@@ -67,6 +67,35 @@ The file will run automatically on your computer restart. However, if this is yo
 export ADSB_KAFKA_TOPIC=adsb
 ```
 
+## Kafka Installation
+
+https://hub.docker.com/r/ubuntu/kafka
+
+```
+docker run -d --name zookeeper -p 2181:2181 ubuntu/zookeeper:edge
+```
+
+```
+docker run -d --name kafka -e TZ=UTC -p 9092:9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:3.1-22.04_beta
+```
+
+When adding a new container, docker assigns an IP address 172.17.0.n. So when adding these two containers, investigate the zookeeper container to determine the static IP necessary to send into the kafka container.
+
+```
+-e ZOOKEEPER_HOST=[IP]
+```
+
+TODO: is there a way to have DNS or FQDN with docker containers?
+
+Log into the kafka server to create and test the topic following the quickstart guide. Kafka is installed under the `/opt/kafka` directory.
+
+https://kafka.apache.org/quickstart
+
+```
+docker exec -it kafka /bin/bash
+```
+
+
 # References
 
 https://inst.eecs.berkeley.edu/~ee123/sp14/lab/lab1-Time_Domain_III-SDR.html
